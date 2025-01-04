@@ -1,0 +1,66 @@
+syntax = "proto3";
+package users;
+
+import "google/protobuf/empty.proto";
+
+message GetParams {
+  string userId = 1;
+  string username = 2;
+}
+
+message CreateParams {
+  string email = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message GetUserCert {
+  string _id = 1;
+  string email = 2;
+  string username = 3;
+  string password = 4;
+}
+
+message CreateRespone {
+  string userId = 1;
+}
+
+message GetUserDto {
+  string _id = 1;
+  string name = 2;
+  string gender = 3;
+  string picture = 4;
+  string birthday = 5;
+  string horoscope = 6;
+  string zodiac = 7;
+  string height = 8;
+  string weight = 9;
+  string email = 10;
+  string username = 11;
+  string password = 12;
+}
+
+message UpdateData {
+  string userId = 1;
+  string name = 2;
+  string gender = 3;
+  string picture = 4;
+  string birthday = 5;
+  string horoscope = 6;
+  string zodiac = 7;
+  string height = 8;
+  string weight = 9;
+}
+
+message StandardRes {
+  repeated GetUserDto users = 1;
+}
+
+service UserService {
+  rpc FindByUsername(GetParams) returns (GetUserDto);
+  rpc FatchCert(GetParams) returns (GetUserCert);
+  rpc FindById(GetParams) returns (GetUserDto);
+  rpc FetchAll(google.protobuf.Empty) returns (StandardRes);
+  rpc CreateData(CreateParams) returns (CreateRespone);
+  rpc UpdateData(UpdateData) returns (CreateRespone);
+}

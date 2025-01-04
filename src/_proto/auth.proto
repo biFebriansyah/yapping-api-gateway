@@ -1,0 +1,27 @@
+syntax = "proto3";
+package auth;
+
+
+message CreateData {
+  string email = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message SignInData {
+  string username = 1;
+  string password = 2;
+}
+
+message TokenRespone {
+  string token = 1;
+}
+
+message CreateRespone {
+  string userId = 1;
+}
+
+service AuthService {
+  rpc SignUp(CreateData) returns (CreateRespone);
+  rpc SignIn(SignInData) returns (TokenRespone);
+}
