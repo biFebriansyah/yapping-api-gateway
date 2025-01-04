@@ -1,11 +1,11 @@
 import { Transport, ClientOptions } from '@nestjs/microservices';
 import { join } from 'path';
 
-export const UserGrpcClient: ClientOptions = {
+export const AuthGrpcClient: ClientOptions = {
   transport: Transport.GRPC,
   options: {
     package: 'auth',
     protoPath: join(__dirname, '../_proto/auth.proto'),
-    url: 'localhost:3003',
+    url: process.env.GRPC_URL_AUTH || 'localhost:3003',
   },
 };

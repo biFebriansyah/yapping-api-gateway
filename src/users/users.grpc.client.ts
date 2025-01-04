@@ -6,6 +6,6 @@ export const UserGrpcClient: ClientOptions = {
   options: {
     package: 'users',
     protoPath: join(__dirname, '../_proto/users.proto'),
-    url: 'localhost:3002',
+    url: process.env.GRPC_URL_USER || 'localhost:3002',
   },
 };
