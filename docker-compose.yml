@@ -1,0 +1,14 @@
+services:
+  backend:
+    image: bukanebi/gateway-service:1
+    container_name: gateway-service
+    restart: unless-stopped
+    ports:
+      - 33013:33013
+    networks:
+      - localnet
+
+networks:
+  localnet:
+    name: localnet
+    external: true
