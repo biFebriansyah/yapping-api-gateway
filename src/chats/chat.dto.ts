@@ -1,11 +1,11 @@
 class CreateChatDto {
   readonly senderId: string;
   readonly receiverId: string;
-  readonly messages: string;
+  readonly message: string;
 }
 class UpdateChatDto {
   readonly chatId: string;
-  readonly messages: string;
+  readonly message: string;
 }
 
 class GetChatDto {

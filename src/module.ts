@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { ChatsController } from './chats/chats.controller';
+import { ChatsModule } from './chats/chats.module';
 import { JwtModules } from './utils/jwt';
 
 @Module({
@@ -11,7 +11,7 @@ import { JwtModules } from './utils/jwt';
     JwtModules.forRoot(),
     AuthModule,
     UsersModule,
-    ChatsController,
+    ChatsModule,
   ],
 })
 export class AppModule {}
