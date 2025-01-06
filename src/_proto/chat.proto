@@ -1,0 +1,47 @@
+syntax = "proto3";
+package chats;
+
+import "google/protobuf/empty.proto";
+
+message CreateData {
+  string senderId = 1;
+  string receiverId = 2;
+  string messages = 3;
+}
+
+message UpdateData {
+  string chatId = 1;
+  string messages = 2;
+}
+
+message GetData {
+  string senderId = 1;
+  string receiverId = 2;
+  string messages = 3;
+  string timestamp = 4;
+}
+
+message GetParams {
+  string chatId = 1;
+  string userId = 2;
+  string senderId = 3;
+  string receiverId = 4;
+}
+
+message StandardRes {
+  repeated GetData chats = 1;
+}
+
+message CreateRes {
+  string chatId = 1;
+}
+
+service ChatService {
+  rpc FatchAll(google.protobuf.Empty) returns (StandardRes);
+  rpc FatchById(GetParams) returns (GetData);
+  rpc FatchUserChat(GetParams) returns (StandardRes);
+  rpc FatchChatHistory(GetParams) returns (StandardRes);
+  rpc CreateChat(CreateData) returns (CreateRes);
+  rpc UpdateChat(UpdateData) returns (CreateRes);
+  rpc DeleteMessage(GetParams) returns (CreateRes);
+}
