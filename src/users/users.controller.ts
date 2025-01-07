@@ -14,7 +14,7 @@ import {
 import { ClientGrpc, Client } from '@nestjs/microservices';
 import { UserService } from './users.interface';
 import { UserGrpcClient } from './users.grpc.client';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, throwError, catchError } from 'rxjs';
 import { GetParams, CreateUserDto, UpdateUserDto, GetUserDto } from './users.dto';
 import { AuthGuard } from '../guard';
 
@@ -32,14 +32,14 @@ export class UsersController implements OnModuleInit {
 
   @Get('/username/:username')
   GetByUsername(@Param() params: GetParams): Observable<GetUserDto> {
-    try {
-      return this.userService.FindByUsername({ username: params.username });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new BadGatewayException(error);
-    }
+    return this.userService.FindByUsername({ username: params.username }).pipe(
+      catchError((error) => {
+        if (error instanceof Error) {
+          return throwError(() => error);
+        }
+        return throwError(() => new BadGatewayException(error));
+      }),
+    );
   }
 
   @Get('/uid/:userId')

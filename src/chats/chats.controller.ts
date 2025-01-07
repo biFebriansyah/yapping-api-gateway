@@ -9,12 +9,15 @@ import {
   Request,
   Body,
   UseGuards,
+  BadGatewayException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ClientGrpc, Client } from '@nestjs/microservices';
 import { ChatService } from './chats.interface';
 import { ChatGrpcClient } from './chats.grpc.client';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable, catchError, throwError } from 'rxjs';
 import { AuthGuard } from '../guard';
+import { status } from '@grpc/grpc-js';
 import { CreateChatDto, GetChatDto, GetParams, UpdateChatDto } from './chat.dto';
 
 @Controller('chat')
@@ -35,7 +38,7 @@ export class ChatsController implements OnModuleInit {
       const result = await firstValueFrom(observData);
       return result.chats;
     } catch (error) {
-      throw error;
+      throw new BadGatewayException(error.details || '');
     }
   }
 
@@ -47,29 +50,38 @@ export class ChatsController implements OnModuleInit {
         receiverId: params.receiverId,
       });
       const result = await firstValueFrom(observData);
-      return result;
+      return result.chats;
     } catch (error) {
-      throw error;
+      if (error?.code === status.NOT_FOUND) {
+        throw new NotFoundException(error.details);
+      }
+      throw new BadGatewayException(error.details || '');
     }
   }
 
   @Get('/:chatId')
   GetById(@Param() params: GetParams): Observable<GetChatDto> {
-    try {
-      const observData = this.chatService.FatchById({ chatId: params.chatId });
-      return observData;
-    } catch (error) {
-      throw error;
-    }
+    return this.chatService.FatchById({ chatId: params.chatId }).pipe(
+      catchError((error) => {
+        if (error?.code === status.NOT_FOUND) {
+          return throwError(() => new NotFoundException(error.details));
+        }
+        return throwError(() => new BadGatewayException(error.details || ''));
+      }),
+    );
   }
 
   @Get()
-  GetChatUser(@Request() req: any): Observable<GetChatDto> {
+  async GetChatUser(@Request() req: any): Promise<GetChatDto[]> {
     try {
-      const observData = this.chatService.FatchById({ userId: req.users.userId });
-      return observData;
+      const observData = this.chatService.FatchUserChat({ userId: req.users.userId });
+      const result = await firstValueFrom(observData);
+      return result.chats;
     } catch (error) {
-      throw error;
+      if (error?.code === status.NOT_FOUND) {
+        throw new NotFoundException(error.details);
+      }
+      throw new BadGatewayException(error.details || '');
     }
   }
 
@@ -79,7 +91,7 @@ export class ChatsController implements OnModuleInit {
       const observData = this.chatService.CreateChat({ ...body });
       return observData;
     } catch (error) {
-      throw error;
+      throw new BadGatewayException(error.details || '');
     }
   }
 
@@ -89,7 +101,7 @@ export class ChatsController implements OnModuleInit {
       const observData = this.chatService.UpdateChat({ ...body });
       return observData;
     } catch (error) {
-      throw error;
+      throw new BadGatewayException(error.details || '');
     }
   }
 
@@ -99,7 +111,7 @@ export class ChatsController implements OnModuleInit {
       const observData = this.chatService.DeleteMessage({ chatId: params.chatId });
       return observData;
     } catch (error) {
-      throw error;
+      throw new BadGatewayException(error.details || '');
     }
   }
 }

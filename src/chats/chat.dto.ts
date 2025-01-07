@@ -9,6 +9,7 @@ class UpdateChatDto {
 }
 
 class GetChatDto {
+  readonly _id: string | any;
   readonly senderId: string | any;
   readonly receiverId: string | any;
   readonly message: string;
