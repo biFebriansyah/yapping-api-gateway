@@ -11,9 +11,12 @@ import { CreateChatDto } from './chat.dto';
 import { ClientGrpc, Client } from '@nestjs/microservices';
 import { ChatService } from './chats.interface';
 import { ChatGrpcClient } from './chats.grpc.client';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @WebSocketGateway(Number(process.env.WSPORT), { namespace: 'chat', cors: { origin: '*' } })
 export class ChatGateway implements OnGatewayConnection, OnModuleInit {
+  constructor(private readonly amqpConnet: AmqpConnection) {}
+
   @Client(ChatGrpcClient)
   private readonly chatClient: ClientGrpc;
 
@@ -21,7 +24,7 @@ export class ChatGateway implements OnGatewayConnection, OnModuleInit {
   private server: Server;
 
   private chatService: ChatService;
-  onModuleInit() {
+  async onModuleInit() {
     this.chatService = this.chatClient.getService<ChatService>('ChatService');
   }
 
@@ -38,9 +41,10 @@ export class ChatGateway implements OnGatewayConnection, OnModuleInit {
   }
 
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() message: CreateChatDto) {
+  async handleMessage(@MessageBody() message: CreateChatDto) {
     try {
       this.chatService.CreateChat({ ...message }).subscribe({});
+      await this.amqpConnet.publish('exchange-chat', 'chat-route', message);
       this.server.to(message.receiverId).emit('receive', message);
     } catch (error) {
       throw error;
