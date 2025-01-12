@@ -1,20 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ChatsController } from './chats.controller';
 import { ChatGateway } from './chats.gateway';
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { RabbitModule } from '../utils/rabbit';
 
 @Module({
-  imports: [
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: process.env.RABBIT_URL || 'amqp://localhost:5672',
-      exchanges: [
-        {
-          name: 'exchange-chat',
-          type: 'direct',
-        },
-      ],
-    }),
-  ],
+  imports: [RabbitModule.register()],
   controllers: [ChatsController],
   providers: [ChatGateway],
 })
