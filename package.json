@@ -1,10 +1,10 @@
 {
-  "name": "api-gateway",
+  "name": "yapping-api-gateway",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Chat app backend built for research and development purposes.",
+  "author": "biFebriansyah",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
