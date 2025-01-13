@@ -34,7 +34,7 @@ A backend service for a chat application, designed and developed for research an
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/backend-project.git
+git clone https://github.com/biFebriansyah/yapping-api-gateway.git
 
 # Install Depencies
 pnpm install
